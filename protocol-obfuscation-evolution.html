@@ -1,87 +1,90 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HTTP 状态码速查：403、404、502 到底是谁的问题 - 魔戒网络洞察</title>
-  <meta name="description" content="网页报错的数字代表什么？用速查表说明常见 HTTP 状态码的含义，并指出哪些是网站问题、哪些可能与你的网络或设置有关。">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shadowsocks、VLESS与sing-box是什么关系：配置迁移前的兼容检查</title>
+<meta content="区分代理协议、传输层与客户端内核，以sing-box配置校验为例处理升级后的未知字段和参数不匹配。" name="description"/>
+<link href="style.css" rel="stylesheet"/>
 </head>
 <body>
-
-  <!-- 顶部导航 -->
-  <header class="site-header">
-    <div class="container">
-      <nav class="nav-wrap">
-        <a href="index.html" class="logo-group">
-          <svg class="logo-ring-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="24" cy="24" r="20" stroke="#334155" stroke-width="2.5"/>
-            <path d="M24 4C35.0457 4 44 12.9543 44 24C44 27.5 43.1 30.8 41.5 33.6L36.8 29.5C37.6 27.8 38 25.9 38 24C38 16.268 31.732 10 24 10C19.8 10 16 11.8 13.4 14.8L9.2 10.6C12.9 6.5 18.1 4 24 4Z" fill="#E11D48"/>
-            <circle cx="24" cy="24" r="10" stroke="#FB7185" stroke-width="2" stroke-dasharray="3 3"/>
-            <circle cx="24" cy="24" r="4" fill="#E11D48"/>
-          </svg>
-          <div>
-            <span class="logo-text">魔戒机场</span>
-            <span class="logo-sub">ACCELERATOR</span>
-          </div>
-        </a>
-
-        <ul class="nav-links">
-          <li><a href="index.html#features">连接实力</a></li>
-          <li><a href="index.html#ecosystem">生态支持</a></li>
-          <li><a href="index.html#pricing">方案定价</a></li>
-          <li><a href="index.html#faq">常见疑问</a></li>
-          <li><a href="insights.html" class="active">网络洞察</a></li>
-        </ul>
-
-        <a href="https://ww012.twilightaff.com/#/?code=A56DH1Af" target="_blank" rel="nofollow" class="header-cta-btn">
+<!-- 顶部导航 -->
+<header class="site-header">
+<div class="container">
+<nav class="nav-wrap">
+<a class="logo-group" href="index.html">
+<svg class="logo-ring-svg" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<circle cx="24" cy="24" r="20" stroke="#334155" stroke-width="2.5"></circle>
+<path d="M24 4C35.0457 4 44 12.9543 44 24C44 27.5 43.1 30.8 41.5 33.6L36.8 29.5C37.6 27.8 38 25.9 38 24C38 16.268 31.732 10 24 10C19.8 10 16 11.8 13.4 14.8L9.2 10.6C12.9 6.5 18.1 4 24 4Z" fill="#E11D48"></path>
+<circle cx="24" cy="24" r="10" stroke="#FB7185" stroke-dasharray="3 3" stroke-width="2"></circle>
+<circle cx="24" cy="24" fill="#E11D48" r="4"></circle>
+</svg>
+<div>
+<span class="logo-text">魔戒机场</span>
+<span class="logo-sub">ACCELERATOR</span>
+</div>
+</a>
+<ul class="nav-links">
+<li><a href="index.html#features">连接实力</a></li>
+<li><a href="index.html#ecosystem">生态支持</a></li>
+<li><a href="index.html#pricing">方案定价</a></li>
+<li><a href="index.html#faq">常见疑问</a></li>
+<li><a class="active" href="insights.html">网络洞察</a></li>
+</ul>
+<a class="header-cta-btn" href="https://ww012.twilightaff.com/#/?code=A56DH1Af" rel="nofollow" target="_blank">
           立即开启
         </a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- 文章正文区域 -->
-  <main class="container">
-    <article class="article-page-wrap">
-      <div class="article-header">
-        <div class="breadcrumb-trail">
-          <a href="index.html">首页</a> &gt; <a href="insights.html">网络洞察</a> &gt; <span>排障常识</span>
-        </div>
-        <h1 class="article-main-title">HTTP 状态码速查：403、404、502 到底是谁的问题</h1>
-        <div class="article-meta-bar">
- <span>发布日期：2026-11-11</span> <span>分类：排障常识</span> <span>预计阅读：5分钟</span>
- </div>
-      </div>
-
-      <div class="article-body">
-<p>网页打不开时，页面上那串数字其实在告诉你原因。读懂它，就知道该找谁。</p>
-<h2>一、先看第一位数字</h2>
-<p>2 开头表示成功；3 开头表示重定向；4 开头表示请求有问题；5 开头表示服务器那边出了问题。</p>
-<h2>二、常见的几个</h2>
-<ul><li>403：被拒绝访问，可能是权限不足，或者出口地区、地址被站点限制。</li><li>404：页面不存在，多是链接失效。</li><li>429：请求太频繁，被限流，稍等再试。</li><li>502、503、504：网关或服务器暂时不可用，多是网站自身问题。</li></ul>
-<h2>三、与你的设置有关的情况</h2>
-<p>403 与 429 常与出口地址有关，更换节点或降低请求频率可能改善；而 5 开头的错误，换节点通常没有帮助，需要等待网站恢复。</p>
-<h2>四、怎么验证</h2>
-<p>换一个网络或设备访问同一网址：若都报同样错误，多半是网站问题；若只有你出错，再检查自己的网络与设置。</p>
- </div>
-
-
-    </article>
-  </main>
-
-  <!-- 页脚 -->
-  <footer class="site-footer">
-    <div class="container">
-      <ul class="footer-nav">
-        <li><a href="sitemap.html">网站地图</a></li>
-        <li><a href="about.html">关于我们</a></li>
-        <li><a href="terms.html">服务条款</a></li>
-        <li><a href="privacy.html">隐私政策</a></li>
-      </ul>
-      <p class="footer-copy">© 2026 魔戒机场 (mojiejichang.click). 保留所有权利。</p>
-    </div>
-  </footer>
-
+</nav>
+</div>
+</header>
+<!-- 文章正文区域 -->
+<main class="container">
+<article class="article-page-wrap">
+<div class="article-header">
+<div class="breadcrumb-trail">
+<a href="index.html">首页</a> &gt; <a href="insights.html">网络洞察</a> &gt; <span>排障常识</span>
+</div>
+<h1 class="article-main-title">Shadowsocks、VLESS与sing-box是什么关系：配置迁移前的兼容检查</h1>
+<div class="article-meta-bar">
+<span>发布日期：2026-11-11</span> <span>分类：排障常识</span> <span>预计阅读：5分钟</span>
+</div>
+</div>
+<div class="article-body"><div data-swc-article-body="2026-11-16"><p>看到节点写着Shadowsocks或VLESS，客户端却叫sing-box，初学者容易以为三者是同一层面的产品。实际上，协议规定通信方式，客户端内核实现这些能力，图形界面再负责管理配置。把层次分清，才能在升级后出错时找到正确文档，而不是反复更换同一套失效参数。</p>
+<h2>用一条连接理解几个层次</h2>
+<p>配置通常需要说明服务器地址、端口、身份信息和协议类型；某些方案还有传输或TLS等选项。它们共同决定客户端如何与服务端通信。不能只把类型从一种协议改成另一种，就期待原服务器自动支持；服务端能力与参数必须匹配。</p>
+<p>sing-box是支持多种入站、出站和路由能力的软件，某个图形客户端又可能绑定特定内核版本。界面能显示节点名称，不代表内核已经成功解析所有字段。判断兼容时要同时查看界面版本、内核版本和配置来源，不能只说“已经更新到最新版”。</p>
+<h2>先保存可以恢复的旧环境</h2>
+<p>在更新前导出自己的配置并记录版本，备份放在受保护位置。订阅地址、密码和身份标识不应上传到公共转换网站。服务提供的订阅与自己手写的配置也要区分：前者可能在下次更新时覆盖改动，后者需要自己维护迁移记录。</p>
+<ol><li>记录当前可用的客户端、内核版本及配置更新时间，保存必要的自定义规则。</li><li>从官方发布说明查看与本次版本相关的迁移内容，特别关注移除字段与默认行为变化。</li><li>在副本上测试新配置，保留原配置作为恢复依据，不直接覆盖唯一能工作的版本。</li></ol>
+<h2>用配置校验区分语法与运行问题</h2>
+<p>sing-box使用JSON配置。命令行环境中，可在明确的工作目录对指定文件执行<code>sing-box check -c config.json</code>，其中config.json替换为实际待检查文件。Windows本地程序可能需要使用相应可执行文件路径。先确认调用的是准备测试的那个版本。</p>
+<p>检查失败时读取第一处有意义的错误。引号、逗号或括号错误属于文件结构问题；未知字段可能来自版本不匹配；引用不到的标记则可能是规则与出站关系不一致。不要把这些错误都描述成线路被阻断，因为程序可能尚未开始连接。</p>
+<h2>校验通过仍需核对服务端参数</h2>
+<p>Shadowsocks配置涉及服务端地址、端口、加密方法和密码等内容，方法需要与服务端一致。VLESS也有自己的身份及相关选项，不能沿用另一协议的密码字段。官方文档中的示例值只展示结构，不是可供所有人使用的真实节点。</p>
+<p>传输、TLS和其他扩展参数应来自可信的服务说明。缺少必需项时不要从网上随机拼接，更不要为了消除报错关闭证书验证。某个字段看似多余，也可能是服务端实际要求；先问清配置来源与适用版本，再决定是否修改。</p>
+<h2>运行验证按最小范围推进</h2>
+<ol><li>使用一个已知有权访问的普通目标，先确认客户端能启动并建立预期连接。</li><li>观察日志中的错误阶段，区分连接超时、握手失败和目标服务返回拒绝。</li><li>普通任务通过后，再按实际需要验证其他应用，不为了比较协议一次开启所有高级选项。</li></ol>
+<p>某个网页正常不代表全部应用都使用同一出口。系统代理、应用独立设置与虚拟网卡模式覆盖范围不同。若只有一个程序失败，先检查它实际使用的路径与协议需求，不能据此直接宣布整个节点不可用。</p>
+<h2>协议名称不提供隐私或速度保证</h2>
+<p>实际安全性取决于完整配置、软件维护、账户管理及服务端行为。不能用“更新的协议”推导出不会被识别、绝对匿名或永不丢包。性能也受接入网络和目标服务影响，协议只是其中一部分，不应该替代真实任务验证。</p>
+<p>阅读<a href="https://dajichang.mom/">多协议机场选择</a>相关套餐资料时，可把自己客户端支持的格式、设备和实际应用列为筛选条件。某服务列出协议名称，并不证明每种客户端版本都支持全部扩展；付款前应核对当前导入方式及维护说明。</p>
+<p>配置标记也要保持一致。假设出站名称已经改动，而路由规则仍引用旧名称，语法表面可能看起来整齐，逻辑却不再对应。修改前先查找旧标记的全部引用，再在副本中统一调整，并重新校验。别同时给多个出站使用难以区分的名称，否则日志出现问题时无法知道实际选中了谁。</p><h2>升级失败如何结束排查</h2>
+<p>若已确定新版本不兼容当前配置，先恢复经过验证的组合，再安排迁移，不在重要工作期间反复试验。向维护方提供版本、脱敏错误和最小配置片段，保留字段结构但移除秘密。不要把完整订阅二维码作为错误截图公开分享。</p>
+<p>修复后记录具体改了哪个字段、为何修改、验证了哪些任务，并检查订阅再次更新后是否仍保留必要规则。这样下一次升级可以从已知变化继续，而不是重新在大量协议名与教程片段之间猜测。</p></div></div>
+</article>
+</main>
+<!-- 页脚 -->
+<footer class="site-footer">
+<div class="container">
+<ul class="footer-nav">
+<li><a href="sitemap.html">网站地图</a></li>
+<li><a href="about.html">关于我们</a></li>
+<li><a href="terms.html">服务条款</a></li>
+<li><a href="privacy.html">隐私政策</a></li>
+</ul>
+<p class="footer-copy">© 2026 魔戒机场 (mojiejichang.click). 保留所有权利。</p>
+</div>
+</footer>
 </body>
 </html>

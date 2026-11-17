@@ -1,89 +1,90 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Go modules 与 GOPROXY：依赖下载慢的设置方法 - 魔戒网络洞察</title>
-  <meta name="description" content="Go 项目拉取依赖总是超时？介绍 GOPROXY、GOSUMDB 与 GOPRIVATE 的作用与设置，兼顾下载速度、校验安全与私有仓库访问。">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>大模型API超时与429怎么处理：分层日志、重试预算和并发队列</title>
+<meta content="以Claude API错误与限流为例，区分请求未送达、已收到响应和流式中断，为应用建立有限重试及重复执行保护。" name="description"/>
+<link href="style.css" rel="stylesheet"/>
 </head>
 <body>
-
-  <!-- 顶部导航 -->
-  <header class="site-header">
-    <div class="container">
-      <nav class="nav-wrap">
-        <a href="index.html" class="logo-group">
-          <svg class="logo-ring-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="24" cy="24" r="20" stroke="#334155" stroke-width="2.5"/>
-            <path d="M24 4C35.0457 4 44 12.9543 44 24C44 27.5 43.1 30.8 41.5 33.6L36.8 29.5C37.6 27.8 38 25.9 38 24C38 16.268 31.732 10 24 10C19.8 10 16 11.8 13.4 14.8L9.2 10.6C12.9 6.5 18.1 4 24 4Z" fill="#E11D48"/>
-            <circle cx="24" cy="24" r="10" stroke="#FB7185" stroke-width="2" stroke-dasharray="3 3"/>
-            <circle cx="24" cy="24" r="4" fill="#E11D48"/>
-          </svg>
-          <div>
-            <span class="logo-text">魔戒机场</span>
-            <span class="logo-sub">ACCELERATOR</span>
-          </div>
-        </a>
-
-        <ul class="nav-links">
-          <li><a href="index.html#features">连接实力</a></li>
-          <li><a href="index.html#ecosystem">生态支持</a></li>
-          <li><a href="index.html#pricing">方案定价</a></li>
-          <li><a href="index.html#faq">常见疑问</a></li>
-          <li><a href="insights.html" class="active">网络洞察</a></li>
-        </ul>
-
-        <a href="https://ww012.twilightaff.com/#/?code=A56DH1Af" target="_blank" rel="nofollow" class="header-cta-btn">
+<!-- 顶部导航 -->
+<header class="site-header">
+<div class="container">
+<nav class="nav-wrap">
+<a class="logo-group" href="index.html">
+<svg class="logo-ring-svg" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<circle cx="24" cy="24" r="20" stroke="#334155" stroke-width="2.5"></circle>
+<path d="M24 4C35.0457 4 44 12.9543 44 24C44 27.5 43.1 30.8 41.5 33.6L36.8 29.5C37.6 27.8 38 25.9 38 24C38 16.268 31.732 10 24 10C19.8 10 16 11.8 13.4 14.8L9.2 10.6C12.9 6.5 18.1 4 24 4Z" fill="#E11D48"></path>
+<circle cx="24" cy="24" r="10" stroke="#FB7185" stroke-dasharray="3 3" stroke-width="2"></circle>
+<circle cx="24" cy="24" fill="#E11D48" r="4"></circle>
+</svg>
+<div>
+<span class="logo-text">魔戒机场</span>
+<span class="logo-sub">ACCELERATOR</span>
+</div>
+</a>
+<ul class="nav-links">
+<li><a href="index.html#features">连接实力</a></li>
+<li><a href="index.html#ecosystem">生态支持</a></li>
+<li><a href="index.html#pricing">方案定价</a></li>
+<li><a href="index.html#faq">常见疑问</a></li>
+<li><a class="active" href="insights.html">网络洞察</a></li>
+</ul>
+<a class="header-cta-btn" href="https://ww012.twilightaff.com/#/?code=A56DH1Af" rel="nofollow" target="_blank">
           立即开启
         </a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- 文章正文区域 -->
-  <main class="container">
-    <article class="article-page-wrap">
-      <div class="article-header">
-        <div class="breadcrumb-trail">
-          <a href="index.html">首页</a> &gt; <a href="insights.html">网络洞察</a> &gt; <span>开发环境</span>
-        </div>
-        <h1 class="article-main-title">Go modules 与 GOPROXY：依赖下载慢的设置方法</h1>
-        <div class="article-meta-bar">
- <span>发布日期：2026-11-15</span> <span>分类：开发环境</span> <span>预计阅读：5分钟</span>
- </div>
-      </div>
-
-      <div class="article-body">
-<p>Go 的模块机制默认从源码仓库下载依赖，网络不稳时容易失败。理解几个环境变量，就能稳定下来。</p>
-<h2>一、GOPROXY：指定模块代理</h2>
-<p>把它设置为可用的模块代理地址，并以 direct 作为兜底。这样大部分依赖从代理下载，代理没有的才直接访问源仓库。</p>
-<h2>二、GOSUMDB：保证完整性</h2>
-<p>校验数据库会核对模块内容是否被篡改。不建议为了图快而关闭它，如果访问不稳定，可以更换为可用的校验服务。</p>
-<h2>三、GOPRIVATE：私有仓库</h2>
-<p>公司内部的模块不应该走公共代理。把内部域名写入 GOPRIVATE，Go 就会跳过代理与校验，直接访问。</p>
-<h2>四、常用命令</h2>
-<ul><li>使用 go env 查看当前设置。</li><li>使用 go env -w 写入持久配置。</li><li>go clean -modcache 可以清理出错的缓存。</li></ul>
-<h2>五、团队统一</h2>
-<p>把这些设置写入项目文档或开发环境脚本，让每个成员的配置一致。</p>
- </div>
-
-
-    </article>
-  </main>
-
-  <!-- 页脚 -->
-  <footer class="site-footer">
-    <div class="container">
-      <ul class="footer-nav">
-        <li><a href="sitemap.html">网站地图</a></li>
-        <li><a href="about.html">关于我们</a></li>
-        <li><a href="terms.html">服务条款</a></li>
-        <li><a href="privacy.html">隐私政策</a></li>
-      </ul>
-      <p class="footer-copy">© 2026 魔戒机场 (mojiejichang.click). 保留所有权利。</p>
-    </div>
-  </footer>
-
+</nav>
+</div>
+</header>
+<!-- 文章正文区域 -->
+<main class="container">
+<article class="article-page-wrap">
+<div class="article-header">
+<div class="breadcrumb-trail">
+<a href="index.html">首页</a> &gt; <a href="insights.html">网络洞察</a> &gt; <span>开发环境</span>
+</div>
+<h1 class="article-main-title">大模型API超时与429怎么处理：分层日志、重试预算和并发队列</h1>
+<div class="article-meta-bar">
+<span>发布日期：2026-11-15</span> <span>分类：开发环境</span> <span>预计阅读：5分钟</span>
+</div>
+</div>
+<div class="article-body"><div data-swc-article-body="2026-11-16"><p>调用大模型接口变慢时，直接增加并发或不断重试，可能让问题更严重。请求也许尚未完成连接，也许已被平台限流，还可能已经开始生成而客户端先超时。本文面向维护自己应用的开发者，以Claude API的公开错误机制为例，建立可观察的处理流程，不承诺某条线路能绕过账户限制。</p>
+<h2>先记录阶段，再记录总耗时</h2>
+<p>每个业务任务使用自己的关联编号，记录入队、开始请求、收到响应头、收到首段内容和结束的时间。日志只保存必要元数据，不默认写入完整提示词、密钥或用户文件。总耗时相同的两个请求，可能一个卡在队列，另一个卡在生成阶段，修复方法不同。</p>
+<p>同时保留状态码、错误类型以及平台提供的请求标识。若尚未收到HTTP响应，就不要把它写成服务端返回错误。流式请求即使开始返回成功状态，中途仍可能出现错误事件；前端需要区分正在生成、部分结果与已完成，不能收到第一段就标记任务成功。</p>
+<h2>第一轮操作：用一个小请求定位</h2>
+<ol><li>暂停批量任务，在测试环境使用一个不含私人资料的小输入，保持原模型和认证方式。</li><li>记录是否获得状态码与请求标识，再与应用日志中的连接或超时错误对应。</li><li>在控制台核对当前账户的使用和限额，并查看平台状态；不要只根据本地客户端提示推测余额或限流原因。</li></ol>
+<p>小请求成功而长请求失败，说明需要继续看输入规模、处理时间和客户端期限；两者都在认证阶段失败，则先修复凭据或权限。修改网络路径之前，至少要知道故障发生在请求生命周期的哪一段。</p>
+<h2>四二九不是一个统一的等待动作</h2>
+<p>Claude的限流涉及请求数与令牌等维度，错误可能也与账户支出上限有关。读取实际错误内容；存在Retry-After响应头时按其等待建议处理。若是持续性的账户上限问题，反复等待几秒再请求并不能解决，应由有权限的人核对控制台条件。</p>
+<p>业务上先把任务放回有限队列，而不是让所有工作线程同时醒来重试。对突发任务设置并发上限，逐渐增加负载，观察成功率与队列等待。比较的是整个任务完成能力，不是瞬间发出了多少请求；发得越多却失败越多，并不叫吞吐提升。</p>
+<h2>计算完整重试预算</h2>
+<p>检查所用SDK是否已经自动重试，再决定应用层要补什么。SDK内部重试与外部循环叠加，会放大实际请求次数和等待时间。为一个业务任务设定最长处理期限、最多尝试次数以及取消条件，超过预算后明确返回可恢复失败。</p>
+<ol><li>列出SDK重试设置和应用重试逻辑，算出最坏情况下可能发生的请求次数。</li><li>只对有理由认为暂时性的错误使用退避，并加入适度随机分散，避免所有请求同步重发。</li><li>遇到认证、参数或权限错误时停止自动重试，给出对应修正信息；用户取消任务后也停止后续尝试。</li></ol>
+<p>等待策略应受业务期限限制。例如用户只愿意等一分钟的交互页面，不适合在后台默默重试十分钟。长批任务则可以持久化队列状态，允许稍后恢复。两种任务最好有不同策略，不能共用一个无限循环。</p>
+<h2>超时不等于服务端没有执行</h2>
+<p>客户端断开时，服务端可能已经接受请求。涉及工具调用或后续业务动作的流程，应以自己的任务状态避免重复写入，不能把重试生成等同于安全地重做付款或发送。对部分生成内容要说明是否完整，不把残缺结构化输出直接交给下一步执行。</p>
+<p>用一个无副作用的测试任务模拟客户端期限较短的情况，观察取消、错误提示和后台状态是否一致。不要对真实订单做故障注入。应用能够解释失败并安全恢复，往往比单纯延长超时更重要。</p>
+<h2>只有连接证据指向路径时才比较线路</h2>
+<p>若同一低负载请求在不同允许的网络环境下表现明显不同，再做<a href="https://dajichang.mom/">AI接口机场选择</a>时，可核对服务条件和客户端兼容性。列表中的线路标签无法保证API接受该出口，也不能替代平台地区、账户与使用政策，测试必须保持这些条件合法有效。</p>
+<p>同时检查应用实际读取的代理设置，而不是只看浏览器是否正常。服务器、容器和桌面程序可能走不同路径，证书库也可能不同。把改善结果与具体运行环境绑定，避免将一台电脑的测试结论推广到全部生产实例。</p>
+<h2>修复以任务成功率验收</h2>
+<p>恢复批量任务时从小并发开始，观察成功率、队列等待、单任务尝试数和费用变化。向支持提交请求标识与时间，不公开密钥和完整用户数据。最终保留错误分类与对应动作，让下一次故障由清楚的流程处理，而不是再靠不断点击重试碰运气。</p></div></div>
+</article>
+</main>
+<!-- 页脚 -->
+<footer class="site-footer">
+<div class="container">
+<ul class="footer-nav">
+<li><a href="sitemap.html">网站地图</a></li>
+<li><a href="about.html">关于我们</a></li>
+<li><a href="terms.html">服务条款</a></li>
+<li><a href="privacy.html">隐私政策</a></li>
+</ul>
+<p class="footer-copy">© 2026 魔戒机场 (mojiejichang.click). 保留所有权利。</p>
+</div>
+</footer>
 </body>
 </html>
